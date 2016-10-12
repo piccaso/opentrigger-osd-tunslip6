@@ -1,0 +1,10 @@
+Package: __PKGBASE__
+Maintainer: Acolono GmbH <hello@acolono.com>
+Architecture: __ARCH__
+Version: __VERSION__
+Provides: __PKGBASE__
+Depends: libc6
+Homepage: http://opentrigger.com/
+Description: tunslip6
+ https://github.com/osdomotics/smart-sarah/tree/master/raspi-edge
+ http://osdwiki.open-entry.com/doku.php/de:projekte:smart-sarah:raspberry

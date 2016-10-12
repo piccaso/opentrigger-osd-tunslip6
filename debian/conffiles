@@ -1,0 +1,3 @@
+/boot/cmdline.txt
+/boot/config.txt
+/lib/systemd/system/tunslip6.service

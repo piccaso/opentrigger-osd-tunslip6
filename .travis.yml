@@ -1,0 +1,14 @@
+sudo: required
+
+language: c
+
+env:
+  - DOCKERIMAGE=dockcross/linux-armv6 ARCH=armhf
+# - DOCKERIMAGE=dockcross/linux-x64   ARCH=amd64
+# - DOCKERIMAGE=dockcross/linux-x86   ARCH=i686
+
+services:
+  - docker
+
+script:
+  - ./build.sh
