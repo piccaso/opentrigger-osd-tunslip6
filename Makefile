@@ -2,11 +2,11 @@ VERSION := 0.1-$(shell date +%s)
 ARCH ?= $(shell dpkg --print-architecture)
 PKGBASE = opentrigger-osd-tunslip6
 PKGNAME = $(PKGBASE)_$(VERSION)_$(ARCH)
-PKGSIZE = $(shell du -s $(PKGNAME) | awk '{print $$1}')
 INSTALL_ROOT ?= /
+DIST = jessie
 
-.PHONY : all clean install
-all : tunslip6.bin smart-sarah.src deb
+.PHONY : all clean install deb publish
+all : tunslip6.bin smart-sarah.src
 
 osd.src:
 	git clone --depth 1 --branch osd https://github.com/osdomotics/osd-contiki osd.src
@@ -37,11 +37,16 @@ deb: all
 	
 	mkdir -p $(PKGNAME)/DEBIAN
 	cp debian/* $(PKGNAME)/DEBIAN
+ifeq ($(ARCH),armhf)
+		cp debian.$(ARCH)/* $(PKGNAME)/DEBIAN
+endif
 	sed -i 's/__ARCH__/$(ARCH)/g' $(PKGNAME)/DEBIAN/control
 	sed -i 's/__VERSION__/$(VERSION)/g' $(PKGNAME)/DEBIAN/control
 	sed -i 's/__PKGBASE__/$(PKGBASE)/g' $(PKGNAME)/DEBIAN/control
 	make install -e INSTALL_ROOT=$(PKGNAME)$(INSTALL_ROOT)
-	#TODO: Installed-Size: __PKGSIZE__
+	du -s $(PKGNAME) | grep -oP ^[0-9]+ > __PKGSIZE__
+	bash -c "sed -i 's/__PKGSIZE__/`cat __PKGSIZE__`/g' $(PKGNAME)/DEBIAN/control"
+	rm __PKGSIZE__
 	fakeroot dpkg-deb --build $(PKGNAME)
 	rm -rf $(PKGNAME) 2> /dev/null || true
 	dpkg-deb -I $(PKGNAME).deb
@@ -54,5 +59,5 @@ publish:
 	@test -n "$(BINTRAYAUTH)" || { echo "Error: BINTRAYAUTH not defined" ; false ; }
 	@test -f "$(PKGNAME).deb" || { echo "Error: $(PKGNAME).deb does not exist" ; false ; }
 	@curl -H "Content-Type: application/json" -u "$(BINTRAYAUTH)" -X POST -d '{"name":"$(VERSION)","desc":"$(VERSION) $(CONFIGURATION)"}' https://bintray.com/api/v1/packages/ao/opentrigger/$(PKGBASE)/versions
-	@curl -u "$(BINTRAYAUTH)" -X PUT --data-binary "@$(PKGNAME).deb" -H "X-Bintray-Publish: 1" -H "X-Bintray-Override: 1" -H "X-Bintray-Debian-Distribution: jessie" -H "X-Bintray-Debian-Component: main" -H "X-Bintray-Debian-Architecture: $(ARCH)" 'https://bintray.com/api/v1/content/ao/opentrigger/$(PKGBASE)/$(VERSION)/pool/main/o/$(PKGNAME).deb'
+	@curl -u "$(BINTRAYAUTH)" -X PUT --data-binary "@$(PKGNAME).deb" -H "X-Bintray-Publish: 1" -H "X-Bintray-Override: 1" -H "X-Bintray-Debian-Distribution: $(DIST)" -H "X-Bintray-Debian-Component: main" -H "X-Bintray-Debian-Architecture: $(ARCH)" 'https://bintray.com/api/v1/content/ao/opentrigger/$(PKGBASE)/$(VERSION)/pool/main/o/$(PKGNAME).deb'
 	

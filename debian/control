@@ -4,6 +4,7 @@ Architecture: __ARCH__
 Version: __VERSION__
 Provides: __PKGBASE__
 Depends: libc6
+Installed-Size: __PKGSIZE__
 Homepage: http://opentrigger.com/
 Description: tunslip6
  https://github.com/osdomotics/smart-sarah/tree/master/raspi-edge
