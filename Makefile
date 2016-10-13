@@ -15,8 +15,13 @@ smart-sarah.src:
 	git clone --depth 1 --branch master https://github.com/osdomotics/smart-sarah/ smart-sarah.src
 	
 tunslip6.bin: osd.src
+ifeq ($(ARCH),i386)
+		cd osd.src/tools && rm -f tunslip6 && make tunslip6 CFLAGS=-m32
+else
 		cd osd.src/tools && rm -f tunslip6 && make tunslip6
-		cp osd.src/tools/tunslip6 tunslip6.bin
+endif
+	cp osd.src/tools/tunslip6 tunslip6.bin
+	strip -v tunslip6.bin || true
 		
 clean:	
 	rm -rf *.src *.bin $(PKGBASE)* *.deb 2> /dev/null || true
@@ -24,11 +29,12 @@ clean:
 install:
 	mkdir -p $(INSTALL_ROOT)bin/
 	install -v -m 755 tunslip6.bin $(INSTALL_ROOT)bin/tunslip6
-	
-	mkdir -p $(INSTALL_ROOT)boot/
-	cp smart-sarah.src/raspi-edge/boot/cmdline.txt $(INSTALL_ROOT)boot/cmdline.txt
-	cp smart-sarah.src/raspi-edge/boot/config.txt $(INSTALL_ROOT)boot/config.txt
-	
+
+ifeq ($(ARCH),armhf)	
+		mkdir -p $(INSTALL_ROOT)boot/
+		install -v -m 755 smart-sarah.src/raspi-edge/boot/cmdline.txt $(INSTALL_ROOT)boot/cmdline.txt
+		install -v -m 755 smart-sarah.src/raspi-edge/boot/config.txt $(INSTALL_ROOT)boot/config.txt
+endif	
 	mkdir -p $(INSTALL_ROOT)lib/systemd/system/
 	cp smart-sarah.src/raspi-edge/system/tunslip6.service $(INSTALL_ROOT)lib/systemd/system/
 

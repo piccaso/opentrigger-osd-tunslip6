@@ -6,6 +6,7 @@ env:
   - DOCKERIMAGE=dockcross/linux-armv6 ARCH=armhf DIST=jessie
   - DOCKERIMAGE=dockcross/linux-x64   ARCH=amd64 DIST=jessie,xenial
   - DOCKERIMAGE=dockcross/linux-x86   ARCH=i686  DIST=jessie,xenial
+  - DOCKERIMAGE=dockcross/linux-x86   ARCH=i386  DIST=jessie,xenial
 
 services:
   - docker
