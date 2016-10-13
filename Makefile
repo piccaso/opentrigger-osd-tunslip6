@@ -1,4 +1,4 @@
-VERSION := 0.1-$(shell date +%s)
+VERSION ?= $(shell git describe --tags | sed -e 's/^v//')
 ARCH ?= $(shell dpkg --print-architecture)
 PKGBASE = opentrigger-osd-tunslip6
 PKGNAME = $(PKGBASE)_$(VERSION)_$(ARCH)
